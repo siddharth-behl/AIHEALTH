@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <link href="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <% if (!locals.asked) { %>
+  <input type="text" name="problem" id="problem">
+  <button id="enter">Submit</button>
+  <% }%>
+
+    
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.js"></script>
+  <script src="https://cdn.botpress.cloud/webchat/v2.1/inject.js"></script>
+  <script src="https://mediafiles.botpress.cloud/15b305cf-bf10-48af-9eba-839ecf950420/webchat/v2.1/config.js" defer></script>
+  <% if (!locals.asked) { %>
+
+
+  <script defer>
+    enter.addEventListener('click', () => {
+      problem = document.getElementById('problem').value
+      sendMessage(`write the following problem is 'Low risk' , 'Medium Risk', 'High Risk' or  'Critical' as number where 1 is low risk and 4 is critical ,just write the number dont write anything else ${problem}`)
+
+    })
+
+    function sendMessage(messageText) {
+      if (window.botpress && window.botpress.sendMessage) {
+
+        window.botpress.sendMessage(messageText);
+      } else {
+        console.error('Botpress or sendMessage function is not available.');
+      }
+    }
+
+
+    
+    window.botpress.on('message', (message) => {
+      
+      const data = fetch('/condition', {
+        method: 'POST',
+        headers: { // Correctly setting headers
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: message.payload.block,
+          asked: true,
+          problem:problem
+        })
+      }).then((response) => {
+
+        location.href = "/"
+      })
+
+
+    });
+  </script>
+  <% }else{%>
+
+  <%}%>
+
+</body>
+
+</html>
